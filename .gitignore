@@ -49,7 +49,6 @@ logs/
 
 # Compiled
 *.class
-*.jar
 *.war
 *.ear
 

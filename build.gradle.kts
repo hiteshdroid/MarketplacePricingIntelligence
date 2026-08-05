@@ -39,7 +39,7 @@ dependencies {
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.mockk:mockk:1.13.10")
-    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.12.2")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring30x:4.22.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
