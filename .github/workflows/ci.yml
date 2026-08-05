@@ -50,7 +50,7 @@ jobs:
           path: build/reports/tests/test/
           retention-days: 7
 
-      - name: Check coverage threshold (70%)
+      - name: Check coverage threshold (30%)
         run: ./gradlew jacocoTestCoverageVerification
 
   code-quality:
