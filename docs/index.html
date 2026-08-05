@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Used Car Price Predictor — Documentation</title>
+    <style>
+        :root {
+          --bg: #0d0f12;
+          --surface: #13161b;
+          --surface2: #1a1f27;
+          --border: rgba(255,255,255,0.08);
+          --border2: rgba(255,255,255,0.14);
+          --text: #e8eaf0;
+          --muted: #7a8394;
+          --accent: #4f8ef7;
+          --accent2: #6ee7b7;
+          --amber: #f59e0b;
+          --coral: #f87171;
+          --purple: #a78bfa;
+          --font-sans: 'Inter', system-ui, sans-serif;
+          --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+          --radius: 10px;
+          --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+          background: var(--bg);
+          color: var(--text);
+          font-family: var(--font-sans);
+          font-size: 15px;
+          line-height: 1.7;
+          min-height: 100vh;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ── Layout ── */
+        .layout { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+          width: 260px;
+          flex-shrink: 0;
+          background: var(--surface);
+          border-right: 1px solid var(--border);
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          overflow-y: auto;
+          padding: 24px 0;
+        }
+
+        .sidebar-logo {
+          padding: 0 20px 20px;
+          border-bottom: 1px solid var(--border);
+          margin-bottom: 16px;
+        }
+
+        .sidebar-logo .badge {
+          display: inline-block;
+          font-size: 11px;
+          padding: 2px 8px;
+          border-radius: 20px;
+          background: rgba(79,142,247,0.15);
+          color: var(--accent);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          margin-bottom: 6px;
+        }
+
+        .sidebar-logo h1 {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--text);
+          line-height: 1.3;
+        }
+
+        .sidebar-logo p {
+          font-size: 12px;
+          color: var(--muted);
+          margin-top: 2px;
+        }
+
+        .nav-group { padding: 0 12px; margin-bottom: 4px; }
+
+        .nav-label {
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          color: var(--muted);
+          text-transform: uppercase;
+          padding: 10px 8px 4px;
+        }
+
+        .nav-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 10px;
+          border-radius: 8px;
+          font-size: 13.5px;
+          color: var(--muted);
+          cursor: pointer;
+          transition: all 0.15s;
+          text-decoration: none;
+        }
+
+        .nav-item:hover { background: var(--surface2); color: var(--text); text-decoration: none; }
+        .nav-item.active { background: rgba(79,142,247,0.12); color: var(--accent); }
+        .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; flex-shrink: 0; }
+
+        /* ── Main ── */
+        .main {
+          flex: 1;
+          min-width: 0;
+          max-width: 860px;
+          padding: 48px 56px;
+        }
+
+        /* ── Sections ── */
+        .section { margin-bottom: 64px; scroll-margin-top: 32px; }
+
+        .section-eyebrow {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--accent);
+          margin-bottom: 8px;
+        }
+
+        h2 {
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--text);
+          margin-bottom: 12px;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
+        }
+
+        h3 {
+          font-size: 17px;
+          font-weight: 600;
+          color: var(--text);
+          margin: 28px 0 10px;
+        }
+
+        h4 {
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin: 20px 0 8px;
+        }
+
+        p { color: #b0b8c8; margin-bottom: 12px; }
+
+        /* ── Hero ── */
+        .hero {
+          background: linear-gradient(135deg, rgba(79,142,247,0.08) 0%, rgba(110,231,183,0.04) 100%);
+          border: 1px solid var(--border2);
+          border-radius: var(--radius-lg);
+          padding: 36px 40px;
+          margin-bottom: 48px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero::before {
+          content: '';
+          position: absolute;
+          top: -60px; right: -60px;
+          width: 200px; height: 200px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .hero-tag {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--accent2);
+          margin-bottom: 10px;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          line-height: 1.15;
+          color: var(--text);
+          margin-bottom: 12px;
+        }
+
+        .hero p {
+          font-size: 15px;
+          color: var(--muted);
+          max-width: 520px;
+          margin-bottom: 24px;
+        }
+
+        .hero-stack {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 12px;
+          font-weight: 500;
+          padding: 5px 10px;
+          border-radius: 20px;
+          border: 1px solid var(--border2);
+          background: var(--surface);
+          color: var(--muted);
+        }
+
+        .chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .chip-green .chip-dot { background: var(--accent2); }
+        .chip-blue .chip-dot { background: var(--accent); }
+        .chip-amber .chip-dot { background: var(--amber); }
+        .chip-purple .chip-dot { background: var(--purple); }
+
+        /* ── Cards ── */
+        .card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 20px 24px;
+          margin-bottom: 12px;
+        }
+
+        .card-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .card-sm {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 16px 20px;
+        }
+
+        .card-sm .label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+        .card-sm .value { font-size: 22px; font-weight: 700; color: var(--text); }
+        .card-sm .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+        /* ── Code ── */
+        pre {
+          background: var(--surface2);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 20px 24px;
+          overflow-x: auto;
+          font-family: var(--font-mono);
+          font-size: 13px;
+          line-height: 1.65;
+          margin: 12px 0 20px;
+          color: #c9d1e0;
+        }
+
+        code {
+          font-family: var(--font-mono);
+          font-size: 13px;
+          background: var(--surface2);
+          border: 1px solid var(--border);
+          border-radius: 5px;
+          padding: 2px 6px;
+          color: var(--accent2);
+        }
+
+        .kw { color: #c792ea; }
+        .str { color: #c3e88d; }
+        .num { color: #f78c6c; }
+        .cmt { color: #546e7a; font-style: italic; }
+        .cls { color: #ffcb6b; }
+        .fn { color: #82aaff; }
+        .ann { color: #f07178; }
+
+        /* ── Method badges ── */
+        .method {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 5px;
+          font-family: var(--font-mono);
+          letter-spacing: 0.04em;
+          min-width: 50px;
+          text-align: center;
+        }
+
+        .GET    { background: rgba(110,231,183,0.12); color: var(--accent2); }
+        .POST   { background: rgba(79,142,247,0.12);  color: var(--accent); }
+        .DELETE { background: rgba(248,113,113,0.12); color: var(--coral); }
+
+        /* ── API table ── */
+        .api-table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+
+        .api-table thead tr { border-bottom: 1px solid var(--border2); }
+        .api-table th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; }
+        .api-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13.5px; vertical-align: middle; }
+        .api-table tr:last-child td { border-bottom: none; }
+        .api-table .path { font-family: var(--font-mono); font-size: 12.5px; color: var(--text); }
+        .api-table .desc { color: var(--muted); font-size: 13px; }
+
+        /* ── Architecture diagram ── */
+        .arch {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 32px;
+          margin: 20px 0;
+        }
+
+        .arch-layer {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 8px;
+          align-items: stretch;
+        }
+
+        .arch-label {
+          width: 80px;
+          flex-shrink: 0;
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          display: flex;
+          align-items: center;
+        }
+
+        .arch-boxes { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
+
+        .arch-box {
+          flex: 1;
+          min-width: 100px;
+          border-radius: 8px;
+          padding: 10px 14px;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: center;
+          border: 1px solid transparent;
+        }
+
+        .arch-box.teal  { background: rgba(110,231,183,0.07);  border-color: rgba(110,231,183,0.2); color: var(--accent2); }
+        .arch-box.blue  { background: rgba(79,142,247,0.07);   border-color: rgba(79,142,247,0.2);  color: var(--accent); }
+        .arch-box.amber { background: rgba(245,158,11,0.07);   border-color: rgba(245,158,11,0.2);  color: var(--amber); }
+        .arch-box.purple{ background: rgba(167,139,250,0.07);  border-color: rgba(167,139,250,0.2); color: var(--purple); }
+
+        .arch-arrow {
+          text-align: center;
+          padding-left: 90px;
+          color: var(--border2);
+          font-size: 18px;
+          margin: 2px 0;
+        }
+
+        /* ── Flow steps ── */
+        .flow { position: relative; padding-left: 36px; margin: 16px 0; }
+        .flow::before { content: ''; position: absolute; left: 10px; top: 20px; bottom: 20px; width: 1px; background: var(--border2); }
+
+        .flow-step { position: relative; margin-bottom: 20px; }
+
+        .flow-num {
+          position: absolute;
+          left: -36px;
+          top: 0;
+          width: 20px; height: 20px;
+          border-radius: 50%;
+          background: var(--accent);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .flow-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+        .flow-sub { font-size: 13px; color: var(--muted); }
+
+        /* ── Weight table ── */
+        .weight-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 12px 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .weight-row:last-child { border-bottom: none; }
+        .weight-name { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; }
+        .weight-bar-wrap { width: 160px; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+        .weight-bar { height: 100%; border-radius: 3px; }
+        .weight-pct { font-size: 13px; font-weight: 600; color: var(--text); width: 36px; text-align: right; font-family: var(--font-mono); }
+
+        /* ── File tree ── */
+        .tree { font-family: var(--font-mono); font-size: 13px; line-height: 2; }
+        .tree-dir { color: var(--accent); font-weight: 600; }
+        .tree-file { color: #b0b8c8; }
+        .tree-indent { padding-left: 20px; }
+        .tree-comment { color: var(--muted); }
+
+        /* ── Alert ── */
+        .alert {
+          border-radius: var(--radius);
+          padding: 14px 18px;
+          margin: 16px 0;
+          font-size: 13.5px;
+          border-left: 3px solid;
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+        }
+
+        .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .alert-body { flex: 1; }
+        .alert-title { font-weight: 600; margin-bottom: 2px; }
+
+        .alert-tip { background: rgba(110,231,183,0.06); border-color: var(--accent2); }
+        .alert-tip .alert-title { color: var(--accent2); }
+        .alert-tip .alert-body p { color: var(--muted); }
+
+        .alert-warn { background: rgba(245,158,11,0.06); border-color: var(--amber); }
+        .alert-warn .alert-title { color: var(--amber); }
+        .alert-warn .alert-body p { color: var(--muted); }
+
+        /* ── HR ── */
+        hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+        @media (max-width: 768px) {
+          .sidebar { display: none; }
+          .main { padding: 24px 20px; }
+          .hero { padding: 24px 20px; }
+          .hero h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="badge">v1.0.0</div>
+            <h1>Used Car Price Predictor</h1>
+            <p>Kotlin · Spring Boot · MongoDB</p>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Getting started</div>
+            <a class="nav-item active" href="#overview"><span class="nav-dot"></span>Overview</a>
+            <a class="nav-item" href="#setup"><span class="nav-dot"></span>Local setup</a>
+            <a class="nav-item" href="#structure"><span class="nav-dot"></span>Project structure</a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Architecture</div>
+            <a class="nav-item" href="#layers"><span class="nav-dot"></span>Layer diagram</a>
+            <a class="nav-item" href="#files"><span class="nav-dot"></span>File by file</a>
+            <a class="nav-item" href="#flow"><span class="nav-dot"></span>Request flow</a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">API Reference</div>
+            <a class="nav-item" href="#transactions"><span class="nav-dot"></span>Transactions</a>
+            <a class="nav-item" href="#competition"><span class="nav-dot"></span>Competition</a>
+            <a class="nav-item" href="#conditions"><span class="nav-dot"></span>Conditions</a>
+            <a class="nav-item" href="#demand"><span class="nav-dot"></span>Demand trends</a>
+            <a class="nav-item" href="#newcar"><span class="nav-dot"></span>New car prices</a>
+            <a class="nav-item" href="#depreciation"><span class="nav-dot"></span>Depreciation</a>
+            <a class="nav-item" href="#predict"><span class="nav-dot"></span>Price prediction</a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Algorithm</div>
+            <a class="nav-item" href="#algo"><span class="nav-dot"></span>Prediction engine</a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Quality</div>
+            <a class="nav-item" href="#testing"><span class="nav-dot"></span>Testing strategy</a>
+            <a class="nav-item" href="#ci"><span class="nav-dot"></span>CI/CD pipeline</a>
+        </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="main">
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-tag">🚗 REST API Documentation</div>
+            <h1>Used Car Price<br/>Predictor</h1>
+            <p>A production-ready REST API that predicts used car prices by combining six market factors: past transactions, competition analysis, vehicle condition, demand trends, new car prices, and depreciation.</p>
+            <div class="hero-stack">
+                <span class="chip chip-green"><span class="chip-dot"></span>Kotlin 1.9</span>
+                <span class="chip chip-blue"><span class="chip-dot"></span>Spring Boot 3.2</span>
+                <span class="chip chip-amber"><span class="chip-dot"></span>MongoDB</span>
+                <span class="chip chip-purple"><span class="chip-dot"></span>Gradle (Kotlin DSL)</span>
+                <span class="chip chip-blue"><span class="chip-dot"></span>OpenAPI 3 / Swagger</span>
+                <span class="chip chip-green"><span class="chip-dot"></span>JUnit 5 + MockK</span>
+                <span class="chip chip-amber"><span class="chip-dot"></span>GitHub Actions CI</span>
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <section class="section" id="overview">
+            <div class="section-eyebrow">Getting started</div>
+            <h2>Overview</h2>
+            <p>This system exposes seven REST APIs covering all six pricing factors plus a unified prediction endpoint. Each factor can be independently populated and queried, and the prediction endpoint aggregates them all in real time to produce a weighted estimated price with a confidence score.</p>
+
+            <div class="card-grid">
+                <div class="card-sm">
+                    <div class="label">APIs</div>
+                    <div class="value">7</div>
+                    <div class="sub">Controllers, each independently testable</div>
+                </div>
+                <div class="card-sm">
+                    <div class="label">Collections</div>
+                    <div class="value">6</div>
+                    <div class="sub">MongoDB documents, one per factor</div>
+                </div>
+                <div class="card-sm">
+                    <div class="label">Coverage gate</div>
+                    <div class="value">70%</div>
+                    <div class="sub">JaCoCo enforced in CI on every push</div>
+                </div>
+            </div>
+
+            <div class="alert alert-tip">
+                <div class="alert-icon">💡</div>
+                <div class="alert-body">
+                    <div class="alert-title">Live API docs</div>
+                    <p>Once the server is running, visit <code>http://localhost:8080/swagger-ui.html</code> for the interactive Swagger UI. All endpoints, schemas, and example bodies are auto-generated from the code.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Setup -->
+        <section class="section" id="setup">
+            <div class="section-eyebrow">Getting started</div>
+            <h2>Local setup</h2>
+
+            <h3>Prerequisites</h3>
+            <p>Before running the project make sure you have the following installed:</p>
+
+            <div class="card" style="margin-bottom:16px;">
+                <table style="width:100%; font-size:13.5px; border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 0; color:var(--text); font-weight:500; width:160px;">JDK 17+</td>
+                        <td style="padding:8px 0; color:var(--muted);">Required — Spring Boot 3.x requires Java 17 minimum</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 0; color:var(--text); font-weight:500;">MongoDB</td>
+                        <td style="padding:8px 0; color:var(--muted);">Running on <code>localhost:27017</code> — use Docker (see below)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 0; color:var(--text); font-weight:500;">Git</td>
+                        <td style="padding:8px 0; color:var(--muted);">For cloning the repository</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 0; color:var(--text); font-weight:500;">Postman</td>
+                        <td style="padding:8px 0; color:var(--muted);">For testing — import the collection from <code>postman/</code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Start MongoDB via Docker</h3>
+            <pre><span class="cmt"># Pull and start MongoDB 7 on the default port</span>
+docker run -d --name mongodb -p 27017:27017 mongo:7
+
+<span class="cmt"># Verify it's running</span>
+docker ps | grep mongo
+
+<span class="cmt"># On subsequent restarts just run:</span>
+docker start mongodb</pre>
+
+            <h3>Clone and run</h3>
+            <pre>git clone https://github.com/hiteshdroid/used-car-price-predictor.git
+cd used-car-price-predictor
+
+<span class="cmt"># Start the Spring Boot server</span>
+./gradlew bootRun</pre>
+
+            <p>The server starts at <code>http://localhost:8080</code>. You should see:</p>
+            <pre>Started CarPredictorApplication in X.XXX seconds (JVM running for X.XXX)</pre>
+
+            <h3>Environment variables</h3>
+            <pre><span class="cmt"># Override the MongoDB URI (optional — defaults to localhost)</span>
+MONGODB_URI=mongodb://user:pass@host:27017/carpredictordb ./gradlew bootRun
+
+<span class="cmt"># Override the port (optional — defaults to 8080)</span>
+PORT=9090 ./gradlew bootRun</pre>
+        </section>
+
+        <!-- Structure -->
+        <section class="section" id="structure">
+            <div class="section-eyebrow">Getting started</div>
+            <h2>Project structure</h2>
+            <pre class="tree">
+<span class="tree-dir">used-car-price-predictor/</span>
+├── <span class="tree-dir">src/main/kotlin/com/hiteshdroid/carpredictor/</span>
+│   ├── <span class="tree-file">CarPredictorApplication.kt</span>       <span class="tree-comment">← Spring Boot entry point</span>
+│   ├── <span class="tree-dir">config/</span>
+│   │   └── <span class="tree-file">OpenApiConfig.kt</span>             <span class="tree-comment">← Swagger / OpenAPI setup</span>
+│   ├── <span class="tree-dir">controller/</span>
+│   │   └── <span class="tree-file">Controllers.kt</span>               <span class="tree-comment">← All 7 REST controllers</span>
+│   ├── <span class="tree-dir">service/</span>
+│   │   └── <span class="tree-file">Services.kt</span>                  <span class="tree-comment">← All 7 services + prediction engine</span>
+│   ├── <span class="tree-dir">repository/</span>
+│   │   └── <span class="tree-file">Repositories.kt</span>              <span class="tree-comment">← 6 MongoRepository interfaces</span>
+│   ├── <span class="tree-dir">model/</span>
+│   │   └── <span class="tree-file">Models.kt</span>                    <span class="tree-comment">← 6 MongoDB @Document classes</span>
+│   ├── <span class="tree-dir">dto/</span>
+│   │   └── <span class="tree-file">DTOs.kt</span>                      <span class="tree-comment">← Request/Response DTOs + ApiResponse</span>
+│   └── <span class="tree-dir">exception/</span>
+│       └── <span class="tree-file">GlobalExceptionHandler.kt</span>    <span class="tree-comment">← @RestControllerAdvice</span>
+│
+├── <span class="tree-dir">src/main/resources/</span>
+│   └── <span class="tree-file">application.yml</span>                  <span class="tree-comment">← MongoDB URI, port, Swagger config</span>
+│
+├── <span class="tree-dir">src/test/kotlin/com/hiteshdroid/carpredictor/</span>
+│   ├── <span class="tree-dir">controller/</span>
+│   │   └── <span class="tree-file">ControllerTests.kt</span>           <span class="tree-comment">← @WebMvcTest slice tests</span>
+│   └── <span class="tree-dir">service/</span>
+│       └── <span class="tree-file">ServiceTests.kt</span>              <span class="tree-comment">← MockK unit tests</span>
+│
+├── <span class="tree-dir">src/test/resources/</span>
+│   └── <span class="tree-file">application-test.yml</span>             <span class="tree-comment">← Embedded MongoDB for tests</span>
+│
+├── <span class="tree-dir">.github/workflows/</span>
+│   └── <span class="tree-file">ci.yml</span>                           <span class="tree-comment">← GitHub Actions pipeline</span>
+│
+├── <span class="tree-dir">postman/</span>
+│   └── <span class="tree-file">Used-Car-Price-Predictor.postman_collection.json</span>
+│
+├── <span class="tree-dir">docs/</span>
+│   └── <span class="tree-file">index.html</span>                       <span class="tree-comment">← This file</span>
+│
+├── <span class="tree-file">build.gradle.kts</span>                     <span class="tree-comment">← Dependencies + JaCoCo config</span>
+├── <span class="tree-file">settings.gradle.kts</span>
+└── <span class="tree-file">README.md</span>
+</pre>
+        </section>
+
+        <hr/>
+
+        <!-- Layers -->
+        <section class="section" id="layers">
+            <div class="section-eyebrow">Architecture</div>
+            <h2>Layer diagram</h2>
+            <p>The application follows a strict three-tier architecture. Each tier has one responsibility and communicates only with the tier directly below it.</p>
+
+            <div class="arch">
+                <div class="arch-layer">
+                    <div class="arch-label">Client</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box teal">Postman</div>
+                        <div class="arch-box teal">Swagger UI</div>
+                        <div class="arch-box teal">GitHub Actions</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓ HTTP JSON</div>
+                <div class="arch-layer">
+                    <div class="arch-label">Web layer</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box blue" style="flex:3">Controllers (7) — route HTTP → service calls, wrap responses in ApiResponse&lt;T&gt;</div>
+                        <div class="arch-box purple" style="flex:1">Exception handler — 400 / 404 / 500</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-layer">
+                    <div class="arch-label">Service layer</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box blue" style="flex:4">Services (7) — business logic, validation, fallback defaults, prediction algorithm</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓ Spring Data</div>
+                <div class="arch-layer">
+                    <div class="arch-label">Data layer</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box amber" style="flex:4">Repositories (6) — auto-generated queries via MongoRepository</div>
+                    </div>
+                </div>
+                <div class="arch-arrow">↓ MongoDB driver</div>
+                <div class="arch-layer">
+                    <div class="arch-label">Database</div>
+                    <div class="arch-boxes">
+                        <div class="arch-box amber" style="flex:4">MongoDB — carpredictordb — 6 collections</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Files -->
+        <section class="section" id="files">
+            <div class="section-eyebrow">Architecture</div>
+            <h2>File by file</h2>
+
+            <h3>Models.kt — six MongoDB documents</h3>
+            <p>Each <code>@Document</code> class maps directly to a MongoDB collection. Spring Data MongoDB handles serialization automatically.</p>
+            <pre><span class="ann">@Document</span>(collection = <span class="str">"transactions"</span>)
+<span class="kw">data class</span> <span class="cls">Transaction</span>(
+    <span class="ann">@Id</span> <span class="kw">val</span> id: String? = <span class="kw">null</span>,
+    <span class="kw">val</span> make: String,
+    <span class="kw">val</span> model: String,
+    <span class="kw">val</span> year: Int,
+    <span class="kw">val</span> mileage: Int,
+    <span class="kw">val</span> salePrice: Double,
+    <span class="kw">val</span> saleDate: LocalDateTime = LocalDateTime.<span class="fn">now</span>(),
+    <span class="cmt">// location, condition, fuelType, transmission, color...</span>
+)</pre>
+
+            <h3>DTOs.kt — request and response objects</h3>
+            <p>DTOs are deliberately separated from models so the API contract stays stable even if the database schema evolves. Request DTOs carry <code>@Valid</code> annotations; Spring validates them before the controller body runs.</p>
+            <pre><span class="kw">data class</span> <span class="cls">TransactionRequest</span>(
+    <span class="ann">@field:NotBlank</span>(message = <span class="str">"Make is required"</span>)
+    <span class="kw">val</span> make: String,
+    <span class="ann">@field:Min</span>(<span class="num">1980</span>) <span class="ann">@field:Max</span>(<span class="num">2025</span>)
+    <span class="kw">val</span> year: Int,
+    <span class="ann">@field:Positive</span>
+    <span class="kw">val</span> salePrice: Double,
+    <span class="cmt">// ...</span>
+)
+
+<span class="kw">data class</span> <span class="cls">ApiResponse</span>&lt;T&gt;(
+    <span class="kw">val</span> success: Boolean,
+    <span class="kw">val</span> message: String,
+    <span class="kw">val</span> data: T? = <span class="kw">null</span>
+)</pre>
+
+            <h3>Repositories.kt — zero-boilerplate queries</h3>
+            <p>Spring Data generates the full query implementation from method names. You declare the interface; Spring writes the MongoDB query at startup.</p>
+            <pre><span class="ann">@Repository</span>
+<span class="kw">interface</span> <span class="cls">TransactionRepository</span> : <span class="cls">MongoRepository</span>&lt;<span class="cls">Transaction</span>, String&gt; {
+    <span class="fn">findByMakeAndModel</span>(make: String, model: String): List&lt;<span class="cls">Transaction</span>&gt;
+    <span class="fn">findByMakeAndModelAndYear</span>(make: String, model: String, year: Int): List&lt;<span class="cls">Transaction</span>&gt;
+}</pre>
+
+            <h3>GlobalExceptionHandler.kt — centralised error mapping</h3>
+            <p>A single <code>@RestControllerAdvice</code> catches all exceptions so no controller needs try-catch blocks. Every error returns a consistent <code>ErrorResponse</code> body.</p>
+            <pre><span class="ann">@ExceptionHandler</span>(<span class="cls">NoSuchElementException</span>::<span class="kw">class</span>)
+<span class="kw">fun</span> <span class="fn">handleNotFound</span>(ex: <span class="cls">NoSuchElementException</span>): <span class="cls">ResponseEntity</span>&lt;<span class="cls">ErrorResponse</span>&gt; =
+    <span class="cls">ResponseEntity</span>.<span class="fn">status</span>(<span class="cls">HttpStatus</span>.NOT_FOUND)
+        .<span class="fn">body</span>(<span class="cls">ErrorResponse</span>(message = ex.message ?: <span class="str">"Resource not found"</span>))
+
+<span class="ann">@ExceptionHandler</span>(<span class="cls">MethodArgumentNotValidException</span>::<span class="kw">class</span>)
+<span class="kw">fun</span> <span class="fn">handleValidation</span>(ex: <span class="cls">MethodArgumentNotValidException</span>): <span class="cls">ResponseEntity</span>&lt;<span class="cls">ErrorResponse</span>&gt; {
+    <span class="kw">val</span> errors = ex.bindingResult.allErrors.<span class="fn">map</span> { it.defaultMessage ?: <span class="str">"Validation error"</span> }
+    <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">status</span>(<span class="cls">HttpStatus</span>.BAD_REQUEST)
+        .<span class="fn">body</span>(<span class="cls">ErrorResponse</span>(message = <span class="str">"Validation failed"</span>, errors = errors))
+}</pre>
+        </section>
+
+        <!-- Flow -->
+        <section class="section" id="flow">
+            <div class="section-eyebrow">Architecture</div>
+            <h2>Request flow</h2>
+            <p>What happens internally when you call <code>POST /api/v1/predict</code>:</p>
+
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-title">HTTP request arrives</div>
+                    <div class="flow-sub">Postman sends a JSON body with make, model, year, mileage, condition, location, fuelType, and transmission.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-title">@Valid runs on the request body</div>
+                    <div class="flow-sub">Spring validates every annotated field. A blank make or a year outside 1980–2025 returns 400 immediately with a per-field error list — before your code runs.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-title">PricePredictionController delegates to PricePredictionService</div>
+                    <div class="flow-sub">The controller has no logic — it just calls the service and wraps the result in <code>ApiResponse&lt;PricePredictionResponse&gt;</code>.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-title">PricePredictionService fans out to six services</div>
+                    <div class="flow-sub">Calls TransactionService (avg sale price), CompetitionService (avg listing price), VehicleConditionRepository (condition score by VIN), DemandTrendService (demand index), NewCarPriceService (on-road price), and DepreciationService (depreciation %) — all in sequence, each hitting MongoDB.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-title">Weighted price is computed</div>
+                    <div class="flow-sub">The six factor values are combined using the weighted algorithm (see Prediction engine section). A confidence score is also produced based on how many data points were available.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">6</div>
+                    <div class="flow-title">PricePredictionResponse is returned as JSON</div>
+                    <div class="flow-sub">Contains <code>predictedPrice</code>, <code>priceRangeLow</code> (−10%), <code>priceRangeHigh</code> (+10%), <code>confidenceScore</code>, and a <code>factors</code> object showing every raw input value used.</div>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- API Reference -->
+        <section class="section" id="transactions">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Transactions</h2>
+            <p>Records of past used-car sales. The most heavily weighted factor (40%) in the prediction algorithm.</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/transactions</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a new past sale transaction</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all transactions</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get transaction by ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/search?make=&amp;model=</td><td class="desc">Search transactions by make and model</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/average-price?make=&amp;model=&amp;year=</td><td class="desc">Get the average sale price for a make/model/year combination</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a transaction by ID</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Example request body</h4>
+            <pre>{
+  <span class="str">"make"</span>:         <span class="str">"Toyota"</span>,
+  <span class="str">"model"</span>:        <span class="str">"Camry"</span>,
+  <span class="str">"year"</span>:         <span class="num">2020</span>,
+  <span class="str">"mileage"</span>:      <span class="num">30000</span>,
+  <span class="str">"salePrice"</span>:    <span class="num">850000</span>,
+  <span class="str">"location"</span>:     <span class="str">"Mumbai"</span>,
+  <span class="str">"condition"</span>:    <span class="str">"Good"</span>,
+  <span class="str">"fuelType"</span>:     <span class="str">"Petrol"</span>,
+  <span class="str">"transmission"</span>: <span class="str">"Automatic"</span>,
+  <span class="str">"color"</span>:        <span class="str">"White"</span>
+}</pre>
+        </section>
+
+        <section class="section" id="competition">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Competition analysis</h2>
+            <p>Current competitor listings from marketplaces like OLX and CarDekho. Weighted at 30% in the prediction.</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/competition</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a competitor listing</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all competition listings</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get a listing by ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/summary?make=&amp;model=&amp;year=</td><td class="desc">Get min/max/avg price and avg days-on-market summary</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a listing</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="conditions">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Vehicle condition</h2>
+            <p>Physical inspection data for a specific vehicle identified by VIN. Applied as a multiplier (0.85–1.15×) after the base price is computed.</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/conditions</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a condition assessment for a vehicle</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all condition records</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get by record ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/vin/{vin}</td><td class="desc">Get condition assessment by vehicle VIN</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a condition record</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Condition score scale</h4>
+            <div class="card">
+                <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--accent2);font-weight:600;">9.0 – 10.0</td><td style="padding:7px 0;color:var(--muted);">Excellent — like new, no accident history, single owner</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--accent);font-weight:600;">7.0 – 8.9</td><td style="padding:7px 0;color:var(--muted);">Good — minor wear, service history available</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--amber);font-weight:600;">5.0 – 6.9</td><td style="padding:7px 0;color:var(--muted);">Fair — visible wear, possibly minor accidents</td></tr>
+                    <tr><td style="padding:7px 0;color:var(--coral);font-weight:600;">0.0 – 4.9</td><td style="padding:7px 0;color:var(--muted);">Poor — major defects, significant accident history</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="section" id="demand">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Demand trends</h2>
+            <p>Monthly demand index and search volume data per make/model/region. Applied as a demand multiplier (0.90–1.10×).</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/demand-trends</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a monthly demand trend record</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all trend records</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get by record ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/search?make=&amp;model=</td><td class="desc">Get all trends for a make/model</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a trend record</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="newcar">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>New car prices</h2>
+            <p>Ex-showroom and on-road prices for new variants. Used together with the depreciation percentage to estimate current market value (20% weight).</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/new-car-prices</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a new car price record</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all price records</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get by record ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/latest?make=&amp;model=&amp;year=</td><td class="desc">Get the most recent on-road price for a make/model/year</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a price record</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section" id="depreciation">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Depreciation</h2>
+            <p>Depreciation percentages keyed by make, model, age in years, mileage band, and fuel type. Falls back to default values when no specific record exists.</p>
+            <p><strong style="color:var(--text);">Base path:</strong> <code>/api/v1/depreciation</code></p>
+
+            <table class="api-table">
+                <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                <tr><td><span class="method POST">POST</span></td><td class="path">/</td><td class="desc">Add a depreciation record</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/</td><td class="desc">Get all depreciation records</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/{id}</td><td class="desc">Get by record ID</td></tr>
+                <tr><td><span class="method GET">GET</span></td><td class="path">/calculate?make=&amp;model=&amp;ageYears=&amp;fuelType=</td><td class="desc">Get the depreciation percentage for a specific vehicle age and fuel type</td></tr>
+                <tr><td><span class="method DELETE">DELETE</span></td><td class="path">/{id}</td><td class="desc">Delete a depreciation record</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Default fallback values (when no record exists)</h4>
+            <div class="card">
+                <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">≤ 1 year</td><td style="padding:7px 0;color:var(--muted);">15%</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">≤ 3 years</td><td style="padding:7px 0;color:var(--muted);">30%</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">≤ 5 years</td><td style="padding:7px 0;color:var(--muted);">45%</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">≤ 8 years</td><td style="padding:7px 0;color:var(--muted);">60%</td></tr>
+                    <tr><td style="padding:7px 0;color:var(--text);font-weight:500;">&gt; 8 years</td><td style="padding:7px 0;color:var(--muted);">70%</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="section" id="predict">
+            <div class="section-eyebrow">API Reference</div>
+            <h2>Price prediction</h2>
+            <p>The main endpoint. Aggregates all six factors and returns a predicted price, a ±10% range, a confidence score, and the full breakdown of every factor used.</p>
+            <p><strong style="color:var(--text);">Endpoint:</strong> <code>POST /api/v1/predict</code></p>
+
+            <h4>Request body</h4>
+            <pre>{
+  <span class="str">"make"</span>:         <span class="str">"Toyota"</span>,        <span class="cmt">// required</span>
+  <span class="str">"model"</span>:        <span class="str">"Camry"</span>,         <span class="cmt">// required</span>
+  <span class="str">"year"</span>:         <span class="num">2020</span>,            <span class="cmt">// 1980–2025</span>
+  <span class="str">"mileage"</span>:      <span class="num">30000</span>,           <span class="cmt">// km, ≥ 0</span>
+  <span class="str">"condition"</span>:    <span class="str">"Good"</span>,          <span class="cmt">// required</span>
+  <span class="str">"location"</span>:     <span class="str">"Mumbai"</span>,        <span class="cmt">// required</span>
+  <span class="str">"fuelType"</span>:     <span class="str">"Petrol"</span>,        <span class="cmt">// required</span>
+  <span class="str">"transmission"</span>: <span class="str">"Automatic"</span>,     <span class="cmt">// required</span>
+  <span class="str">"vin"</span>:          <span class="str">"JTDBE32K123..."</span> <span class="cmt">// optional — enables condition score lookup</span>
+}</pre>
+
+            <h4>Response body</h4>
+            <pre>{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"message"</span>: <span class="str">"Price predicted successfully"</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"make"</span>:             <span class="str">"Toyota"</span>,
+    <span class="str">"model"</span>:            <span class="str">"Camry"</span>,
+    <span class="str">"year"</span>:             <span class="num">2020</span>,
+    <span class="str">"mileage"</span>:          <span class="num">30000</span>,
+    <span class="str">"predictedPrice"</span>:   <span class="num">756000.0</span>,
+    <span class="str">"priceRangeLow"</span>:    <span class="num">680400.0</span>,  <span class="cmt">// predictedPrice × 0.90</span>
+    <span class="str">"priceRangeHigh"</span>:   <span class="num">831600.0</span>,  <span class="cmt">// predictedPrice × 1.10</span>
+    <span class="str">"confidenceScore"</span>:  <span class="num">90.0</span>,       <span class="cmt">// 0–100</span>
+    <span class="str">"factors"</span>: {
+      <span class="str">"avgTransactionPrice"</span>: <span class="num">850000.0</span>,
+      <span class="str">"avgCompetitionPrice"</span>: <span class="num">820000.0</span>,
+      <span class="str">"conditionScore"</span>:      <span class="num">7.5</span>,
+      <span class="str">"demandIndex"</span>:         <span class="num">75.5</span>,
+      <span class="str">"newCarOnRoadPrice"</span>:   <span class="num">1550000.0</span>,
+      <span class="str">"depreciationPercent"</span>: <span class="num">38.5</span>,
+      <span class="str">"computedAt"</span>:          <span class="str">"2026-08-05T10:30:00"</span>
+    }
+  }
+}</pre>
+        </section>
+
+        <hr/>
+
+        <!-- Algo -->
+        <section class="section" id="algo">
+            <div class="section-eyebrow">Algorithm</div>
+            <h2>Prediction engine</h2>
+            <p>The prediction algorithm runs in two stages: a weighted base price from three market sources, then two sequential multiplier adjustments.</p>
+
+            <h3>Stage 1 — weighted base price</h3>
+
+            <div class="card">
+                <div class="weight-row">
+                    <div class="weight-name">Past transaction average</div>
+                    <div class="weight-bar-wrap"><div class="weight-bar" style="width:100%; background:var(--accent2);"></div></div>
+                    <div class="weight-pct">40%</div>
+                </div>
+                <div class="weight-row">
+                    <div class="weight-name">Competition listing average</div>
+                    <div class="weight-bar-wrap"><div class="weight-bar" style="width:75%; background:var(--accent);"></div></div>
+                    <div class="weight-pct">30%</div>
+                </div>
+                <div class="weight-row">
+                    <div class="weight-name">New car price × (1 − depreciation%)</div>
+                    <div class="weight-bar-wrap"><div class="weight-bar" style="width:50%; background:var(--amber);"></div></div>
+                    <div class="weight-pct">20%</div>
+                </div>
+            </div>
+
+            <div class="alert alert-warn">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-body">
+                    <div class="alert-title">Missing data handling</div>
+                    <p>If a data source has no records for the requested make/model/year, its weight is excluded from the sum. A car with only transaction data still gets a valid prediction at reduced confidence.</p>
+                </div>
+            </div>
+
+            <h3>Stage 2 — multiplier adjustments</h3>
+
+            <div class="card" style="margin-bottom:12px;">
+                <p style="margin-bottom:8px;"><strong style="color:var(--text);">Condition multiplier</strong></p>
+                <p style="margin-bottom:0;">Applied when a VIN is supplied and a condition record exists. Formula: <code>0.85 + (conditionScore / 10.0) × 0.30</code>. A score of 0 applies 0.85× (15% penalty); a score of 10 applies 1.15× (15% premium).</p>
+            </div>
+
+            <div class="card">
+                <p style="margin-bottom:8px;"><strong style="color:var(--text);">Demand multiplier</strong></p>
+                <p style="margin-bottom:0;">Applied when demand trend data exists. Formula: <code>0.90 + (demandIndex / 100.0) × 0.20</code>. A demand index of 0 applies 0.90×; an index of 100 applies 1.10×.</p>
+            </div>
+
+            <h3>Confidence score</h3>
+            <div class="card">
+                <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">Transaction data present</td><td style="padding:7px 0;color:var(--muted);">+40 points</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">Competition data present</td><td style="padding:7px 0;color:var(--muted);">+30 points</td></tr>
+                    <tr style="border-bottom:1px solid var(--border);"><td style="padding:7px 0;color:var(--text);font-weight:500;">Condition score present</td><td style="padding:7px 0;color:var(--muted);">+20 points</td></tr>
+                    <tr><td style="padding:7px 0;color:var(--text);font-weight:500;">Base (always)</td><td style="padding:7px 0;color:var(--muted);">+10 points</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- Testing -->
+        <section class="section" id="testing">
+            <div class="section-eyebrow">Quality</div>
+            <h2>Testing strategy</h2>
+
+            <h3>Service unit tests — ServiceTests.kt</h3>
+            <p>Pure unit tests. MockK replaces every repository with a fake so no Spring context starts. Tests run in milliseconds.</p>
+            <pre><span class="ann">@ExtendWith</span>(<span class="cls">MockKExtension</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="cls">TransactionServiceTest</span> {
+
+    <span class="ann">@MockK</span> <span class="kw">lateinit var</span> repo: <span class="cls">TransactionRepository</span>
+    <span class="ann">@InjectMockKs</span> <span class="kw">lateinit var</span> service: <span class="cls">TransactionService</span>
+
+    <span class="ann">@Test</span>
+    <span class="kw">fun</span> <span class="str">`getById should throw when not found`</span>() {
+        <span class="fn">every</span> { repo.<span class="fn">findById</span>(<span class="str">"bad-id"</span>) } <span class="fn">returns</span> Optional.<span class="fn">empty</span>()
+        <span class="fn">assertThrows</span>&lt;<span class="cls">NoSuchElementException</span>&gt; { service.<span class="fn">getById</span>(<span class="str">"bad-id"</span>) }
+    }
+}</pre>
+
+            <h3>Controller slice tests — ControllerTests.kt</h3>
+            <p><code>@WebMvcTest</code> loads only the web layer (controllers + exception handler). MockMvc fires real HTTP requests in-process without a running server or database.</p>
+            <pre><span class="ann">@WebMvcTest</span>(<span class="cls">TransactionController</span>::<span class="kw">class</span>)
+<span class="ann">@Import</span>(<span class="cls">TransactionControllerTest</span>.<span class="cls">MockConfig</span>::<span class="kw">class</span>)
+<span class="kw">class</span> <span class="cls">TransactionControllerTest</span> {
+
+    <span class="ann">@Test</span>
+    <span class="kw">fun</span> <span class="str">`POST transaction with invalid body should return 400`</span>() {
+        <span class="kw">val</span> invalidReq = <span class="cls">TransactionRequest</span>(make = <span class="str">""</span>, <span class="cmt">/* ... */</span>)
+        mockMvc.<span class="fn">perform</span>(<span class="fn">post</span>(<span class="str">"/api/v1/transactions"</span>)
+            .<span class="fn">contentType</span>(<span class="cls">MediaType</span>.APPLICATION_JSON)
+            .<span class="fn">content</span>(objectMapper.<span class="fn">writeValueAsString</span>(invalidReq)))
+            .<span class="fn">andExpect</span>(<span class="fn">status</span>().<span class="fn">isBadRequest</span>)
+            .<span class="fn">andExpect</span>(<span class="fn">jsonPath</span>(<span class="str">"$.errors"</span>).<span class="fn">isArray</span>)
+    }
+}</pre>
+
+            <h3>Running tests</h3>
+            <pre><span class="cmt"># Run all tests</span>
+./gradlew test
+
+<span class="cmt"># Generate HTML coverage report</span>
+./gradlew test jacocoTestReport
+
+<span class="cmt"># View in browser (Mac)</span>
+open build/reports/jacoco/test/html/index.html
+
+<span class="cmt"># Verify 70% coverage threshold</span>
+./gradlew jacocoTestCoverageVerification</pre>
+        </section>
+
+        <!-- CI/CD -->
+        <section class="section" id="ci">
+            <div class="section-eyebrow">Quality</div>
+            <h2>CI/CD pipeline</h2>
+            <p>The GitHub Actions workflow at <code>.github/workflows/ci.yml</code> runs on every push and pull request to <code>main</code> and <code>develop</code>.</p>
+
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-title">Checkout code</div>
+                    <div class="flow-sub">actions/checkout@v4 fetches the full repository at the pushed commit.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-title">Set up JDK 17 (Temurin)</div>
+                    <div class="flow-sub">actions/setup-java@v4 with Gradle caching — subsequent runs skip dependency downloads.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-title">Build (./gradlew build -x test)</div>
+                    <div class="flow-sub">Compiles all Kotlin sources. If compilation fails the pipeline stops here.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-title">Run all tests (./gradlew test)</div>
+                    <div class="flow-sub">Runs all unit and slice tests. Uses the embedded flapdoodle MongoDB — no external database needed in CI.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-title">Generate JaCoCo coverage report</div>
+                    <div class="flow-sub">Produces HTML and XML reports. The HTML artifact is uploaded so you can download and inspect it from the GitHub Actions run page.</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">6</div>
+                    <div class="flow-title">Enforce 70% coverage threshold</div>
+                    <div class="flow-sub">./gradlew jacocoTestCoverageVerification fails the build if instruction coverage drops below 70%. This blocks merging PRs that delete or skip tests.</div>
+                </div>
+            </div>
+
+            <div class="alert alert-tip">
+                <div class="alert-icon">💡</div>
+                <div class="alert-body">
+                    <div class="alert-title">Downloading coverage reports</div>
+                    <p>Go to your GitHub Actions run → click the <strong>jacoco-coverage-report</strong> artifact at the bottom of the summary page → download the zip → open <code>index.html</code> inside it.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); font-size:13px; color:var(--muted);">
+            <p>Used Car Price Predictor · <a href="https://github.com/hiteshdroid/used-car-price-predictor">github.com/hiteshdroid/used-car-price-predictor</a> · MIT License</p>
+        </footer>
+
+    </main>
+</div>
+
+<script>
+    const sections = document.querySelectorAll('.section');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
