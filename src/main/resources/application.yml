@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: used-car-price-predictor
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/carpredictordb}
+      database: ${MONGODB_DATABASE:carpredictordb}
+
+server:
+  port: ${PORT:8080}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.hiteshdroid: DEBUG
+    org.springframework.data.mongodb: INFO

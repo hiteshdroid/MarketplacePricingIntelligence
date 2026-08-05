@@ -1,0 +1,285 @@
+{
+  "info": {
+    "name": "Used Car Price Predictor API",
+    "description": "Complete Postman collection for the Used Car Price Predictor REST APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🚗 Transactions",
+      "item": [
+        {
+          "name": "Add Transaction",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/transactions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"salePrice\": 850000,\n  \"location\": \"Mumbai\",\n  \"condition\": \"Good\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Automatic\",\n  \"color\": \"White\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/transactions"
+          }
+        },
+        {
+          "name": "Get Transaction By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/transactions/{{transactionId}}"
+          }
+        },
+        {
+          "name": "Search Transactions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/search?make=Toyota&model=Camry",
+              "query": [
+                { "key": "make", "value": "Toyota" },
+                { "key": "model", "value": "Camry" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Average Sale Price",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/average-price?make=Toyota&model=Camry&year=2020",
+              "query": [
+                { "key": "make", "value": "Toyota" },
+                { "key": "model", "value": "Camry" },
+                { "key": "year", "value": "2020" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/transactions/{{transactionId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏁 Competition Analysis",
+      "item": [
+        {
+          "name": "Add Competition Listing",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/competition",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Honda\",\n  \"model\": \"City\",\n  \"year\": 2021,\n  \"mileage\": 20000,\n  \"listingPrice\": 700000,\n  \"source\": \"OLX\",\n  \"location\": \"Delhi\",\n  \"condition\": \"Good\",\n  \"daysOnMarket\": 15\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Listings",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/competition" }
+        },
+        {
+          "name": "Get Competition Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/competition/summary?make=Honda&model=City&year=2021",
+              "query": [
+                { "key": "make", "value": "Honda" },
+                { "key": "model", "value": "City" },
+                { "key": "year", "value": "2021" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Listing",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/competition/{{listingId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Vehicle Condition",
+      "item": [
+        {
+          "name": "Add Condition Assessment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/conditions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vin\": \"JTDBE32K123456789\",\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"overallGrade\": \"Good\",\n  \"bodyCondition\": \"Excellent\",\n  \"engineCondition\": \"Good\",\n  \"interiorCondition\": \"Good\",\n  \"tyreCondition\": \"Fair\",\n  \"accidentHistory\": false,\n  \"serviceHistoryAvailable\": true,\n  \"numberOfOwners\": 1,\n  \"conditionScore\": 7.5\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Conditions",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/conditions" }
+        },
+        {
+          "name": "Get Condition by VIN",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/conditions/vin/JTDBE32K123456789"
+          }
+        },
+        {
+          "name": "Delete Condition",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/conditions/{{conditionId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📈 Demand Trends",
+      "item": [
+        {
+          "name": "Add Demand Trend",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/demand-trends",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"month\": 8,\n  \"demandIndex\": 75.5,\n  \"searchVolume\": 12000,\n  \"avgDaysToSell\": 18,\n  \"region\": \"Mumbai\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Trends",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/demand-trends" }
+        },
+        {
+          "name": "Search Trends by Make & Model",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/demand-trends/search?make=Toyota&model=Camry",
+              "query": [
+                { "key": "make", "value": "Toyota" },
+                { "key": "model", "value": "Camry" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏷️ New Car Prices",
+      "item": [
+        {
+          "name": "Add New Car Price",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/new-car-prices",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2024,\n  \"variant\": \"XSE V6\",\n  \"exShowroomPrice\": 1400000,\n  \"onRoadPrice\": 1550000,\n  \"effectiveFrom\": \"2024-01-01T00:00:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All New Car Prices",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/new-car-prices" }
+        },
+        {
+          "name": "Get Latest On-Road Price",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/new-car-prices/latest?make=Toyota&model=Camry&year=2024",
+              "query": [
+                { "key": "make", "value": "Toyota" },
+                { "key": "model", "value": "Camry" },
+                { "key": "year", "value": "2024" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📉 Depreciation",
+      "item": [
+        {
+          "name": "Add Depreciation Data",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/depreciation",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"ageYears\": 4,\n  \"mileageBand\": \"30001-60000\",\n  \"depreciationPercent\": 38.5,\n  \"fuelType\": \"Petrol\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Depreciation Records",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/depreciation" }
+        },
+        {
+          "name": "Calculate Depreciation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/depreciation/calculate?make=Toyota&model=Camry&ageYears=4&fuelType=Petrol",
+              "query": [
+                { "key": "make", "value": "Toyota" },
+                { "key": "model", "value": "Camry" },
+                { "key": "ageYears", "value": "4" },
+                { "key": "fuelType", "value": "Petrol" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔮 Price Prediction",
+      "item": [
+        {
+          "name": "Predict Car Price",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/predict",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"condition\": \"Good\",\n  \"location\": \"Mumbai\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Automatic\",\n  \"vin\": \"JTDBE32K123456789\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "❤️ Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/actuator/health" }
+        }
+      ]
+    }
+  ]
+}
