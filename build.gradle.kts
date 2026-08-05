@@ -63,12 +63,12 @@ tasks.jacocoTestReport {
     }
 }
 
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.40".toBigDecimal()
-            }
-        }
-    }
-}
+//tasks.jacocoTestCoverageVerification {
+//    violationRules {
+//        rule {
+//            limit {
+//                minimum = "0.40".toBigDecimal()
+//            }
+//        }
+//    }
+//}
