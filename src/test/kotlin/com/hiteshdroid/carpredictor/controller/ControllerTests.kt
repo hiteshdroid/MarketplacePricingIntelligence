@@ -89,7 +89,18 @@ class TransactionControllerTest {
 
     @Test
     fun `POST transaction with invalid body should return 400`() {
-        val invalidReq = mapOf("make" to "", "model" to "Camry")
+        // Sending a TransactionRequest with blank make triggers @NotBlank validation
+        val invalidReq = TransactionRequest(
+            make = "",                // violates @NotBlank
+            model = "Camry",
+            year = 2020,
+            mileage = 30000,
+            salePrice = 850000.0,
+            location = "Mumbai",
+            condition = "Good",
+            fuelType = "Petrol",
+            transmission = "Automatic"
+        )
 
         mockMvc.perform(
             post("/api/v1/transactions")
@@ -97,6 +108,8 @@ class TransactionControllerTest {
                 .content(objectMapper.writeValueAsString(invalidReq))
         )
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.success").value(false))
+            .andExpect(jsonPath("$.errors").isArray)
     }
 
     @Test
