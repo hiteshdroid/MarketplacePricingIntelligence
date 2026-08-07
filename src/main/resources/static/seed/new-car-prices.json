@@ -1,0 +1,17 @@
+[
+  { "make": "Toyota",  "model": "Camry",    "year": 2024, "variant": "3.5 V6",       "exShowroomPrice": 1400000, "onRoadPrice": 1550000 },
+  { "make": "Toyota",  "model": "Corolla",  "year": 2024, "variant": "Altis Premium", "exShowroomPrice": 2100000, "onRoadPrice": 2300000 },
+  { "make": "Toyota",  "model": "Innova",   "year": 2024, "variant": "Crysta GX",    "exShowroomPrice": 1950000, "onRoadPrice": 2150000 },
+  { "make": "Toyota",  "model": "Fortuner", "year": 2024, "variant": "4x2 AT",       "exShowroomPrice": 3350000, "onRoadPrice": 3700000 },
+  { "make": "Honda",   "model": "City",     "year": 2024, "variant": "ZX CVT",       "exShowroomPrice": 1560000, "onRoadPrice": 1720000 },
+  { "make": "Honda",   "model": "Amaze",    "year": 2024, "variant": "VX CVT",       "exShowroomPrice": 900000,  "onRoadPrice": 1000000 },
+  { "make": "Honda",   "model": "CR-V",     "year": 2024, "variant": "AWD",          "exShowroomPrice": 3490000, "onRoadPrice": 3850000 },
+  { "make": "Maruti",  "model": "Swift",    "year": 2024, "variant": "ZXI+",         "exShowroomPrice": 860000,  "onRoadPrice": 950000  },
+  { "make": "Maruti",  "model": "Baleno",   "year": 2024, "variant": "Alpha",        "exShowroomPrice": 980000,  "onRoadPrice": 1085000 },
+  { "make": "Maruti",  "model": "Dzire",    "year": 2024, "variant": "ZXI+",         "exShowroomPrice": 930000,  "onRoadPrice": 1030000 },
+  { "make": "Maruti",  "model": "Ertiga",   "year": 2024, "variant": "ZXI+",         "exShowroomPrice": 1100000, "onRoadPrice": 1220000 },
+  { "make": "Hyundai", "model": "Creta",    "year": 2024, "variant": "SX(O) Turbo",  "exShowroomPrice": 1990000, "onRoadPrice": 2200000 },
+  { "make": "Hyundai", "model": "i20",      "year": 2024, "variant": "Asta Turbo",   "exShowroomPrice": 1100000, "onRoadPrice": 1220000 },
+  { "make": "Hyundai", "model": "Venue",    "year": 2024, "variant": "SX Turbo",     "exShowroomPrice": 1250000, "onRoadPrice": 1385000 },
+  { "make": "Hyundai", "model": "Verna",    "year": 2024, "variant": "SX Turbo CVT", "exShowroomPrice": 1590000, "onRoadPrice": 1760000 }
+]

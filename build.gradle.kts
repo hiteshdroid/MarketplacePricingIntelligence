@@ -36,6 +36,10 @@ dependencies {
     // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
+    // Phase 1 — AI automation
+    implementation("org.jsoup:jsoup:1.17.2")                          // Web scraping
+    implementation("org.springframework.boot:spring-boot-starter-webflux") // Async HTTP client for APIs
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.mockk:mockk:1.13.10")

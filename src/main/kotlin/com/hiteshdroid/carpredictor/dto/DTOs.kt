@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class TransactionRequest(
     @field:NotBlank(message = "Make is required") val make: String,
     @field:NotBlank(message = "Model is required") val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:Min(0) val mileage: Int,
     @field:Positive val salePrice: Double,
     @field:NotBlank val location: String,
@@ -33,12 +33,27 @@ data class TransactionResponse(
     val color: String?
 )
 
+data class BulkTransactionResponse(
+    val totalRequested: Int,
+    val totalSaved: Int,
+    val totalFailed: Int,
+    val saved: List<TransactionResponse>,
+    val failed: List<BulkTransactionError>
+)
+
+data class BulkTransactionError(
+    val index: Int,
+    val make: String,
+    val model: String,
+    val reason: String
+)
+
 // ─── Competition DTOs ─────────────────────────────────────────────────────────
 
 data class CompetitionListingRequest(
     @field:NotBlank val make: String,
     @field:NotBlank val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:Min(0) val mileage: Int,
     @field:Positive val listingPrice: Double,
     @field:NotBlank val source: String,
@@ -64,7 +79,7 @@ data class VehicleConditionRequest(
     @field:NotBlank val vin: String,
     @field:NotBlank val make: String,
     @field:NotBlank val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:Min(0) val mileage: Int,
     @field:NotBlank val overallGrade: String,
     @field:NotBlank val bodyCondition: String,
@@ -82,7 +97,7 @@ data class VehicleConditionRequest(
 data class DemandTrendRequest(
     @field:NotBlank val make: String,
     @field:NotBlank val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:Min(1) @field:Max(12) val month: Int,
     @field:DecimalMin("0.0") @field:DecimalMax("100.0") val demandIndex: Double,
     @field:Min(0) val searchVolume: Int,
@@ -95,7 +110,7 @@ data class DemandTrendRequest(
 data class NewCarPriceRequest(
     @field:NotBlank val make: String,
     @field:NotBlank val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:NotBlank val variant: String,
     @field:Positive val exShowroomPrice: Double,
     @field:Positive val onRoadPrice: Double,
@@ -119,7 +134,7 @@ data class DepreciationRequest(
 data class PricePredictionRequest(
     @field:NotBlank val make: String,
     @field:NotBlank val model: String,
-    @field:Min(1980) @field:Max(2025) val year: Int,
+    @field:Min(1980) @field:Max(2026) val year: Int,
     @field:Min(0) val mileage: Int,
     @field:NotBlank val condition: String,
     @field:NotBlank val location: String,

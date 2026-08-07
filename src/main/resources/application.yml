@@ -30,3 +30,31 @@ logging:
   level:
     com.hiteshdroid: DEBUG
     org.springframework.data.mongodb: INFO
+
+# ── Phase 1: AI Automation ────────────────────────────────────────────────────
+automation:
+  # HuggingFace free inference API — sentiment-based demand index
+  # No key needed for public models; add HUGGINGFACE_API_KEY to raise rate limits
+  huggingface:
+    api-url: https://api-inference.huggingface.co/models/ProsusAI/finbert
+    api-key: ${HUGGINGFACE_API_KEY:}
+
+  # Scraper settings
+  scraper:
+    user-agent: "Mozilla/5.0 (compatible; CarPriceBot/1.0)"
+    timeout-ms: 10000
+    tracked-makes:
+      - make: Toyota
+        models: [Camry, Corolla, Innova, Fortuner]
+      - make: Honda
+        models: [City, Amaze, CR-V]
+      - make: Maruti
+        models: [Swift, Baleno, Dzire, Ertiga]
+      - make: Hyundai
+        models: [Creta, i20, Venue, Verna]
+
+  # Cron schedules
+  schedule:
+    competition: "0 0 6 * * *"       # daily at 6 AM
+    new-car-prices: "0 */2 * * * *"  # every 2 mins
+    demand-trends: "0 0 */6 * * *"   # every 6 hours

@@ -41,6 +41,30 @@ class TransactionService(private val repo: TransactionRepository) {
         return txns.map { it.salePrice }.average()
     }
 
+    fun addTransactions(requests: List<TransactionRequest>): BulkTransactionResponse {
+        log.debug { "Bulk adding ${requests.size} transactions" }
+        val saved = mutableListOf<TransactionResponse>()
+        val failed = mutableListOf<BulkTransactionError>()
+
+        requests.forEachIndexed { index, req ->
+            try {
+                saved.add(addTransaction(req))
+            } catch (ex: Exception) {
+                log.warn { "  Failed item[$index] ${req.make} ${req.model}: ${ex.message}" }
+                failed.add(BulkTransactionError(index = index, make = req.make, model = req.model, reason = ex.message ?: "Unknown error"))
+            }
+        }
+
+        log.debug { "Bulk complete — saved: ${saved.size}, failed: ${failed.size}" }
+        return BulkTransactionResponse(
+            totalRequested = requests.size,
+            totalSaved = saved.size,
+            totalFailed = failed.size,
+            saved = saved,
+            failed = failed
+        )
+    }
+
     fun deleteById(id: String) {
         if (!repo.existsById(id)) throw NoSuchElementException("Transaction not found: $id")
         repo.deleteById(id)

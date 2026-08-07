@@ -17,11 +17,35 @@ import org.springframework.web.bind.annotation.*
 class TransactionController(private val service: TransactionService) {
 
     @PostMapping
-    @Operation(summary = "Add a new transaction")
+    @Operation(summary = "Add a single transaction")
     fun add(@Valid @RequestBody req: TransactionRequest): ResponseEntity<ApiResponse<TransactionResponse>> {
         val result = service.addTransaction(req)
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse(true, "Transaction added successfully", result))
+    }
+
+    @PostMapping("/bulk")
+    @Operation(
+        summary = "Add multiple transactions in one call",
+        description = "Accepts an array of transactions. Each item is validated independently. " +
+                "Failed items are reported in the response without blocking the rest."
+    )
+    fun addBulk(
+        @RequestBody requests: List<@Valid TransactionRequest>
+    ): ResponseEntity<ApiResponse<BulkTransactionResponse>> {
+        if (requests.isEmpty()) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse(false, "Request list cannot be empty"))
+        }
+        if (requests.size > 500) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse(false, "Maximum 500 transactions per bulk request"))
+        }
+        val result = service.addTransactions(requests)
+        val status = if (result.totalFailed == 0) HttpStatus.CREATED else HttpStatus.MULTI_STATUS
+        val message = "Bulk complete — ${result.totalSaved} saved, ${result.totalFailed} failed"
+        return ResponseEntity.status(status)
+            .body(ApiResponse(true, message, result))
     }
 
     @GetMapping
