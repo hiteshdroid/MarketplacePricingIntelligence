@@ -24,16 +24,21 @@ data class SeedCarPrice(
 )
 
 /**
- * Syncs new car prices monthly using two strategies:
+ * Syncs new car prices using two strategies:
  *
- *  1. PRIMARY — bundled seed/new-car-prices.json (Indian market prices,
- *     manually curated and committed to the repo — update annually)
+ *  1. PRIMARY  — bundled seed/new-car-prices.json (Indian market prices,
+ *                manually curated — update the JSON file annually)
+ *  2. SECONDARY — segment-based estimates for any tracked make/model
+ *                 not covered by the seed file
  *
- *  2. SECONDARY — segment-based price estimation for any make/model
- *     in the tracked list that isn't covered by the seed file
+ * WHEN IT RUNS:
+ *  - On every application startup (ApplicationReadyEvent) — ensures DB
+ *    is never empty when the server boots for the first time
+ *  - Monthly cron (1st of month, 1 AM) — picks up annual price revisions
+ *  - Manual trigger: POST /api/v1/automation/sync/new-car-prices
  *
  * Note: External vehicle APIs (NHTSA, CarQuery) were evaluated and dropped —
- * NHTSA is US-only and under maintenance; CarQuery blocks server-side access.
+ * NHTSA is under maintenance; CarQuery blocks server-side access.
  * The seed file approach is more accurate for Indian market pricing.
  */
 @Service
@@ -42,32 +47,30 @@ class NewCarPriceSyncJob(
     private val scraperProps: ScraperProperties,
     private val objectMapper: ObjectMapper
 ) {
-
+    // ── Triggered once when the application is fully started ─────────────────
     @EventListener(ApplicationReadyEvent::class)
-    fun runOnStartup() {
-        log.info { "🚀 Running NewCarPriceSyncJob on startup" }
+    fun onStartup() {
+        log.info { "🚀 App ready — running new car price sync on startup" }
         syncNewCarPrices()
     }
 
+    // ── Monthly cron — picks up price revisions ───────────────────────────────
     @Scheduled(cron = "\${automation.schedule.new-car-prices:0 0 1 1 * *}")
     fun syncNewCarPrices() {
         log.info { "⏰ New car price sync job started" }
 
         val thisMonth = LocalDateTime.now().withDayOfMonth(1).toLocalDate()
 
-        // Skip if already synced this month
+        // Skip if already synced this month (prevents double-run on same month)
         val alreadySynced = repo.findAll()
             .any { it.effectiveFrom.toLocalDate() >= thisMonth }
 
-        if (false) {
+        if (alreadySynced) {
             log.info { "⏭️  Already synced this month — skipping" }
             return
         }
 
-        // Step 1: load seed file
-        val seedCount = loadSeedData()
-
-        // Step 2: for any tracked make/model not in seed, generate estimates
+        val seedCount     = loadSeedData()
         val estimateCount = generateMissingEstimates()
 
         log.info { "✅ New car price sync done — $seedCount from seed, $estimateCount estimated" }
@@ -76,17 +79,16 @@ class NewCarPriceSyncJob(
     private fun loadSeedData(): Int {
         return try {
             val resource = ClassPathResource("static/seed/new-car-prices.json")
-            val seeds = objectMapper.readValue<List<SeedCarPrice>>(resource.inputStream)
-
-            val prices = seeds.map { seed ->
+            val seeds    = objectMapper.readValue<List<SeedCarPrice>>(resource.inputStream)
+            val prices   = seeds.map { seed ->
                 NewCarPrice(
-                    make = seed.make,
-                    model = seed.model,
-                    year = seed.year,
-                    variant = seed.variant,
-                    exShowroomPrice = seed.exShowroomPrice,
-                    onRoadPrice = seed.onRoadPrice,
-                    effectiveFrom = LocalDateTime.now()
+                    make             = seed.make,
+                    model            = seed.model,
+                    year             = seed.year,
+                    variant          = seed.variant,
+                    exShowroomPrice  = seed.exShowroomPrice,
+                    onRoadPrice      = seed.onRoadPrice,
+                    effectiveFrom    = LocalDateTime.now()
                 )
             }
             repo.saveAll(prices)
@@ -99,12 +101,11 @@ class NewCarPriceSyncJob(
     }
 
     private fun generateMissingEstimates(): Int {
-        var count = 0
+        var count       = 0
         val currentYear = LocalDateTime.now().year
 
         scraperProps.trackedMakes.forEach { trackedMake ->
             trackedMake.models.forEach { model ->
-                // Only estimate if no seed record exists for this make/model
                 val existing = repo.findByMakeAndModelAndYear(trackedMake.make, model, currentYear)
                 if (existing.isEmpty()) {
                     val base = segmentBasePrice(trackedMake.make, model)
@@ -115,13 +116,13 @@ class NewCarPriceSyncJob(
                     ).forEach { (variant, exShowroom, onRoad) ->
                         repo.save(
                             NewCarPrice(
-                                make = trackedMake.make,
-                                model = model,
-                                year = currentYear,
-                                variant = variant,
+                                make            = trackedMake.make,
+                                model           = model,
+                                year            = currentYear,
+                                variant         = variant,
                                 exShowroomPrice = exShowroom,
-                                onRoadPrice = onRoad,
-                                effectiveFrom = LocalDateTime.now()
+                                onRoadPrice     = onRoad,
+                                effectiveFrom   = LocalDateTime.now()
                             )
                         )
                         count++
@@ -137,28 +138,9 @@ class NewCarPriceSyncJob(
         knownBasePrices[make]?.get(model) ?: 800000.0
 
     private val knownBasePrices = mapOf(
-        "Toyota"  to mapOf(
-            "Camry"    to 1400000.0,
-            "Corolla"  to 2100000.0,
-            "Innova"   to 1950000.0,
-            "Fortuner" to 3350000.0
-        ),
-        "Honda"   to mapOf(
-            "City"  to 1560000.0,
-            "Amaze" to 900000.0,
-            "CR-V"  to 3490000.0
-        ),
-        "Maruti"  to mapOf(
-            "Swift"  to 860000.0,
-            "Baleno" to 980000.0,
-            "Dzire"  to 930000.0,
-            "Ertiga" to 1100000.0
-        ),
-        "Hyundai" to mapOf(
-            "Creta" to 1990000.0,
-            "i20"   to 1100000.0,
-            "Venue" to 1250000.0,
-            "Verna" to 1590000.0
-        )
+        "Toyota"  to mapOf("Camry" to 1400000.0, "Corolla" to 2100000.0, "Innova" to 1950000.0, "Fortuner" to 3350000.0),
+        "Honda"   to mapOf("City"  to 1560000.0, "Amaze"   to 900000.0,  "CR-V"   to 3490000.0),
+        "Maruti"  to mapOf("Swift" to 860000.0,  "Baleno"  to 980000.0,  "Dzire"  to 930000.0,  "Ertiga"  to 1100000.0),
+        "Hyundai" to mapOf("Creta" to 1990000.0, "i20"     to 1100000.0, "Venue"  to 1250000.0, "Verna"   to 1590000.0)
     )
 }

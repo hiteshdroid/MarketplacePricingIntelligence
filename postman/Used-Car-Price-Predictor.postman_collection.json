@@ -1,18 +1,37 @@
 {
   "info": {
     "name": "Used Car Price Predictor API",
-    "description": "Complete Postman collection for the Used Car Price Predictor REST APIs",
+    "description": "Complete Postman collection for the Used Car Price Predictor REST APIs.\n\n## Quick Start\n1. Set `baseUrl` variable to `http://localhost:8080`\n2. Run **🤖 Automation / Trigger All Jobs** first to seed DB\n3. Then run **Bulk Add Transactions** to add historical data\n4. Finally call **Predict Car Price** to see a prediction\n\n## Groups\n- 🚗 Transactions — single & bulk add, search, average price\n- 🏁 Competition — listings, summary stats\n- 🔧 Vehicle Condition — condition assessments by ID & VIN\n- 📈 Demand Trends — market demand index\n- 🏷️ New Car Prices — ex-showroom & on-road prices\n- 📉 Depreciation — depreciation records & calculator\n- 🔮 Price Prediction — main prediction endpoint\n- 🤖 Automation — manually trigger scheduled jobs\n- ❤️ Health — actuator health check",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" }
+    { "key": "baseUrl",       "value": "http://localhost:8080", "type": "string" },
+    { "key": "transactionId", "value": "",                      "type": "string", "description": "Set after calling Add Transaction" },
+    { "key": "listingId",     "value": "",                      "type": "string", "description": "Set after calling Add Competition Listing" },
+    { "key": "conditionId",   "value": "",                      "type": "string", "description": "Set after calling Add Condition Assessment" },
+    { "key": "trendId",       "value": "",                      "type": "string", "description": "Set after calling Add Demand Trend" },
+    { "key": "priceId",       "value": "",                      "type": "string", "description": "Set after calling Add New Car Price" },
+    { "key": "depreciationId","value": "",                      "type": "string", "description": "Set after calling Add Depreciation Data" }
   ],
   "item": [
+
     {
       "name": "🚗 Transactions",
       "item": [
         {
-          "name": "Add Transaction",
+          "name": "Add Single Transaction",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('transactionId', json.data.id);",
+                "  console.log('transactionId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -20,6 +39,19 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"salePrice\": 850000,\n  \"location\": \"Mumbai\",\n  \"condition\": \"Good\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Automatic\",\n  \"color\": \"White\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Add Transactions",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/transactions/bulk",
+            "description": "Add multiple transactions in one call. Max 500 per request.\nFailed items are reported individually without blocking the rest.\nResponse HTTP 201 = all saved, HTTP 207 = partial success.",
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"make\": \"Toyota\",\n    \"model\": \"Camry\",\n    \"year\": 2020,\n    \"mileage\": 30000,\n    \"salePrice\": 850000,\n    \"location\": \"Mumbai\",\n    \"condition\": \"Good\",\n    \"fuelType\": \"Petrol\",\n    \"transmission\": \"Automatic\",\n    \"color\": \"White\"\n  },\n  {\n    \"make\": \"Honda\",\n    \"model\": \"City\",\n    \"year\": 2021,\n    \"mileage\": 18000,\n    \"salePrice\": 720000,\n    \"location\": \"Delhi\",\n    \"condition\": \"Excellent\",\n    \"fuelType\": \"Petrol\",\n    \"transmission\": \"CVT\",\n    \"color\": \"Silver\"\n  },\n  {\n    \"make\": \"Maruti\",\n    \"model\": \"Swift\",\n    \"year\": 2022,\n    \"mileage\": 12000,\n    \"salePrice\": 620000,\n    \"location\": \"Bangalore\",\n    \"condition\": \"Excellent\",\n    \"fuelType\": \"Petrol\",\n    \"transmission\": \"Manual\",\n    \"color\": \"Red\"\n  },\n  {\n    \"make\": \"Hyundai\",\n    \"model\": \"Creta\",\n    \"year\": 2021,\n    \"mileage\": 25000,\n    \"salePrice\": 1350000,\n    \"location\": \"Chennai\",\n    \"condition\": \"Good\",\n    \"fuelType\": \"Diesel\",\n    \"transmission\": \"Automatic\",\n    \"color\": \"Blue\"\n  },\n  {\n    \"make\": \"Toyota\",\n    \"model\": \"Innova\",\n    \"year\": 2019,\n    \"mileage\": 55000,\n    \"salePrice\": 1450000,\n    \"location\": \"Pune\",\n    \"condition\": \"Good\",\n    \"fuelType\": \"Diesel\",\n    \"transmission\": \"Manual\",\n    \"color\": \"White\"\n  }\n]"
             }
           }
         },
@@ -34,18 +66,19 @@
           "name": "Get Transaction By ID",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/v1/transactions/{{transactionId}}"
+            "url": "{{baseUrl}}/api/v1/transactions/{{transactionId}}",
+            "description": "transactionId is auto-set after calling Add Single Transaction"
           }
         },
         {
-          "name": "Search Transactions",
+          "name": "Search Transactions by Make & Model",
           "request": {
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/transactions/search?make=Toyota&model=Camry",
               "query": [
-                { "key": "make", "value": "Toyota" },
-                { "key": "model", "value": "Camry" }
+                { "key": "make",  "value": "Toyota" },
+                { "key": "model", "value": "Camry"  }
               ]
             }
           }
@@ -57,9 +90,9 @@
             "url": {
               "raw": "{{baseUrl}}/api/v1/transactions/average-price?make=Toyota&model=Camry&year=2020",
               "query": [
-                { "key": "make", "value": "Toyota" },
-                { "key": "model", "value": "Camry" },
-                { "key": "year", "value": "2020" }
+                { "key": "make",  "value": "Toyota" },
+                { "key": "model", "value": "Camry"  },
+                { "key": "year",  "value": "2020"   }
               ]
             }
           }
@@ -73,11 +106,24 @@
         }
       ]
     },
+
     {
       "name": "🏁 Competition Analysis",
       "item": [
         {
           "name": "Add Competition Listing",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('listingId', json.data.id);",
+                "  console.log('listingId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -90,18 +136,29 @@
         },
         {
           "name": "Get All Listings",
-          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/competition" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/competition"
+          }
+        },
+        {
+          "name": "Get Listing By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/competition/{{listingId}}"
+          }
         },
         {
           "name": "Get Competition Summary",
           "request": {
             "method": "GET",
+            "description": "Returns min/max/avg price and average days-on-market for a make/model/year",
             "url": {
               "raw": "{{baseUrl}}/api/v1/competition/summary?make=Honda&model=City&year=2021",
               "query": [
-                { "key": "make", "value": "Honda" },
-                { "key": "model", "value": "City" },
-                { "key": "year", "value": "2021" }
+                { "key": "make",  "value": "Honda" },
+                { "key": "model", "value": "City"  },
+                { "key": "year",  "value": "2021"  }
               ]
             }
           }
@@ -115,11 +172,24 @@
         }
       ]
     },
+
     {
       "name": "🔧 Vehicle Condition",
       "item": [
         {
           "name": "Add Condition Assessment",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('conditionId', json.data.id);",
+                "  console.log('conditionId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -132,13 +202,24 @@
         },
         {
           "name": "Get All Conditions",
-          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/conditions" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/conditions"
+          }
+        },
+        {
+          "name": "Get Condition By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/conditions/{{conditionId}}"
+          }
         },
         {
           "name": "Get Condition by VIN",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/v1/conditions/vin/JTDBE32K123456789"
+            "url": "{{baseUrl}}/api/v1/conditions/vin/JTDBE32K123456789",
+            "description": "Look up condition assessment by Vehicle Identification Number"
           }
         },
         {
@@ -150,11 +231,25 @@
         }
       ]
     },
+
     {
       "name": "📈 Demand Trends",
+      "description": "Demand index is auto-populated every 6 hours via HuggingFace FinBERT sentiment analysis.\nManually add records here if you want to override the automated values.",
       "item": [
         {
           "name": "Add Demand Trend",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('trendId', json.data.id);",
+                "  console.log('trendId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -167,7 +262,17 @@
         },
         {
           "name": "Get All Trends",
-          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/demand-trends" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/demand-trends"
+          }
+        },
+        {
+          "name": "Get Trend By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/demand-trends/{{trendId}}"
+          }
         },
         {
           "name": "Search Trends by Make & Model",
@@ -176,19 +281,40 @@
             "url": {
               "raw": "{{baseUrl}}/api/v1/demand-trends/search?make=Toyota&model=Camry",
               "query": [
-                { "key": "make", "value": "Toyota" },
-                { "key": "model", "value": "Camry" }
+                { "key": "make",  "value": "Toyota" },
+                { "key": "model", "value": "Camry"  }
               ]
             }
+          }
+        },
+        {
+          "name": "Delete Trend",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/demand-trends/{{trendId}}"
           }
         }
       ]
     },
+
     {
       "name": "🏷️ New Car Prices",
+      "description": "Auto-populated on startup and 1st of every month from seed/new-car-prices.json.\nManually add records here to override or extend.",
       "item": [
         {
           "name": "Add New Car Price",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('priceId', json.data.id);",
+                "  console.log('priceId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -201,7 +327,17 @@
         },
         {
           "name": "Get All New Car Prices",
-          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/new-car-prices" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/new-car-prices"
+          }
+        },
+        {
+          "name": "Get New Car Price By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/new-car-prices/{{priceId}}"
+          }
         },
         {
           "name": "Get Latest On-Road Price",
@@ -210,20 +346,40 @@
             "url": {
               "raw": "{{baseUrl}}/api/v1/new-car-prices/latest?make=Toyota&model=Camry&year=2024",
               "query": [
-                { "key": "make", "value": "Toyota" },
-                { "key": "model", "value": "Camry" },
-                { "key": "year", "value": "2024" }
+                { "key": "make",  "value": "Toyota" },
+                { "key": "model", "value": "Camry"  },
+                { "key": "year",  "value": "2024"   }
               ]
             }
+          }
+        },
+        {
+          "name": "Delete New Car Price",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/new-car-prices/{{priceId}}"
           }
         }
       ]
     },
+
     {
       "name": "📉 Depreciation",
       "item": [
         {
           "name": "Add Depreciation Data",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.id) {",
+                "  pm.collectionVariables.set('depreciationId', json.data.id);",
+                "  console.log('depreciationId set to', json.data.id);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -236,25 +392,44 @@
         },
         {
           "name": "Get All Depreciation Records",
-          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/depreciation" }
-        },
-        {
-          "name": "Calculate Depreciation",
           "request": {
             "method": "GET",
+            "url": "{{baseUrl}}/api/v1/depreciation"
+          }
+        },
+        {
+          "name": "Get Depreciation By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/depreciation/{{depreciationId}}"
+          }
+        },
+        {
+          "name": "Calculate Depreciation %",
+          "request": {
+            "method": "GET",
+            "description": "Returns the depreciation percentage for a specific make/model/age/fuel combination.\nFalls back to default values if no record exists.",
             "url": {
               "raw": "{{baseUrl}}/api/v1/depreciation/calculate?make=Toyota&model=Camry&ageYears=4&fuelType=Petrol",
               "query": [
-                { "key": "make", "value": "Toyota" },
-                { "key": "model", "value": "Camry" },
-                { "key": "ageYears", "value": "4" },
+                { "key": "make",     "value": "Toyota" },
+                { "key": "model",    "value": "Camry"  },
+                { "key": "ageYears", "value": "4"      },
                 { "key": "fuelType", "value": "Petrol" }
               ]
             }
           }
+        },
+        {
+          "name": "Delete Depreciation Record",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/depreciation/{{depreciationId}}"
+          }
         }
       ]
     },
+
     {
       "name": "🔮 Price Prediction",
       "item": [
@@ -264,22 +439,93 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/api/v1/predict",
+            "description": "Aggregates all 6 factors and returns:\n- predictedPrice\n- priceRangeLow  (−10%)\n- priceRangeHigh (+10%)\n- confidenceScore (0–100 based on data availability)\n- factors breakdown (shows exactly what data was used)\n\nTip: add 'vin' to include condition score in the prediction.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"condition\": \"Good\",\n  \"location\": \"Mumbai\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Automatic\",\n  \"vin\": \"JTDBE32K123456789\"\n}"
             }
           }
+        },
+        {
+          "name": "Predict — Without VIN (no condition score)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/predict",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Maruti\",\n  \"model\": \"Swift\",\n  \"year\": 2022,\n  \"mileage\": 12000,\n  \"condition\": \"Excellent\",\n  \"location\": \"Bangalore\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Predict — Validation Error (blank make)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/predict",
+            "description": "Expects HTTP 400 with per-field error list",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"\",\n  \"model\": \"Camry\",\n  \"year\": 2020,\n  \"mileage\": 30000,\n  \"condition\": \"Good\",\n  \"location\": \"Mumbai\",\n  \"fuelType\": \"Petrol\",\n  \"transmission\": \"Automatic\"\n}"
+            }
+          }
         }
       ]
     },
+
+    {
+      "name": "🤖 Automation",
+      "description": "Manually trigger the scheduled jobs without waiting for the cron.\n\nJobs run automatically:\n- New Car Prices  → on startup + 1st of every month\n- Demand Trends   → on startup + every 6 hours (calls HuggingFace FinBERT)\n- Competition     → daily at 6 AM (Jsoup scraper with synthetic fallback)",
+      "item": [
+        {
+          "name": "Trigger All Jobs",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/automation/sync/all",
+            "description": "Runs all three jobs in sequence:\n1. New car price sync (seed JSON + estimates)\n2. Competition scraper (Jsoup + synthetic fallback)\n3. Demand trend update (HuggingFace FinBERT + seasonal fallback)"
+          }
+        },
+        {
+          "name": "Trigger Competition Scraper",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/automation/scrape/competition",
+            "description": "Runs the Jsoup competition scraper.\nAttempts CarDekho live scrape, falls back to synthetic market-realistic listings."
+          }
+        },
+        {
+          "name": "Trigger New Car Price Sync",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/automation/sync/new-car-prices",
+            "description": "Loads seed/new-car-prices.json then generates estimates for any gaps.\nSkips if already synced this month."
+          }
+        },
+        {
+          "name": "Trigger Demand Trend Update",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/automation/sync/demand-trends",
+            "description": "Calls HuggingFace FinBERT for each tracked make/model.\nFalls back to seasonality-aware synthetic index if API is unavailable."
+          }
+        }
+      ]
+    },
+
     {
       "name": "❤️ Health",
       "item": [
         {
           "name": "Health Check",
-          "request": { "method": "GET", "url": "{{baseUrl}}/actuator/health" }
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/actuator/health",
+            "description": "Returns overall app health including MongoDB connectivity status"
+          }
         }
       ]
     }
+
   ]
 }
