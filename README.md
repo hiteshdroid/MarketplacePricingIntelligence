@@ -119,9 +119,6 @@ src/main/kotlin/com/hiteshdroid/carpredictor/
    ├─ DepreciationService.kt
    └─ PricePredictionService.kt
 ```
-
-This modular layout replaces the previous monolithic `DTOs.kt`, `Models.kt`, `Repositories.kt`, and `Services.kt` files.
-
 ---
 
 ## 🔬 Price Prediction (brief)
@@ -161,12 +158,4 @@ Import `postman/Used-Car-Price-Predictor.postman_collection.json` and set `baseU
 
 The GitHub Actions workflow builds the project, runs tests, and publishes test artifacts. See `.github/workflows` for details.
 
----
-
-If you'd like, I can also:
-
-- Generate a concise developer README with commands and examples for common tasks (run, test, debug).
-- Add a small CONTRIBUTING.md describing code style and commit conventions.
-
----
 © Project maintained by the original repository authors.
