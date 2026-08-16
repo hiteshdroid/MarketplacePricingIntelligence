@@ -21,10 +21,12 @@ func main() {
     if err != nil { log.Fatal(err) }
     if err = client.Ping(ctx, nil); err != nil { log.Fatal(err) }
     app := &App{db: client.Database(getenv("MONGODB_DATABASE", "carpredictordb"))}
+    startAutomation(app)
     r := gin.New()
     r.Use(gin.Logger(), gin.Recovery())
     r.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status":"UP"}) })
     registerRoutes(r, app)
+    registerAutomationRoutes(r, app)
     port := getenv("PORT", "8080")
     log.Printf("car price predictor listening on :%s", port)
     if err := r.Run(":"+port); err != nil { log.Fatal(err) }
