@@ -1,7 +1,8 @@
 # 🚗 Used Car Price Predictor
 
-A production-ready REST API system for predicting used car prices using 6 key factors:
-**Past Transactions · Competition Analysis · Vehicle Condition · Demand Trends · New Car Prices · Depreciation**
+A modular Spring Boot REST API for predicting used car prices. The codebase has been refactored into focused files: each controller, DTO, model, repository, and service lives in its own Kotlin file to improve maintainability and navigation.
+
+What's included: Past Transactions, Competition Analysis, Vehicle Condition, Demand Trends, New Car Prices, Depreciation, and a Price Prediction endpoint that combines these factors.
 
 ---
 
@@ -9,14 +10,13 @@ A production-ready REST API system for predicting used car prices using 6 key fa
 
 | Layer | Technology |
 |-------|-----------|
-| Language | Kotlin 1.9 |
-| Framework | Spring Boot 3.2 |
+| Language | Kotlin |
+| Framework | Spring Boot |
 | Build | Gradle (Kotlin DSL) |
 | Database | MongoDB |
 | API Docs | OpenAPI 3 / Swagger UI |
 | Testing | JUnit 5 + MockK |
-| Coverage | JaCoCo (70% threshold) |
-| CI/CD | GitHub Actions |
+| Coverage | JaCoCo |
 
 ---
 
@@ -25,7 +25,7 @@ A production-ready REST API system for predicting used car prices using 6 key fa
 ### Prerequisites
 
 - JDK 17+
-- MongoDB running locally on port `27017`
+- MongoDB (default listens on port `27017`)
 - Git
 
 ### Clone & Run
@@ -36,9 +36,9 @@ cd used-car-price-predictor
 ./gradlew bootRun
 ```
 
-App starts at: `http://localhost:8080`
+The app starts at: `http://localhost:8080`
 
-### With custom MongoDB URI
+### Run with custom MongoDB URI
 
 ```bash
 MONGODB_URI=mongodb://localhost:27017/carpredictordb ./gradlew bootRun
@@ -48,139 +48,125 @@ MONGODB_URI=mongodb://localhost:27017/carpredictordb ./gradlew bootRun
 
 ## 📚 API Documentation
 
-Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
-OpenAPI JSON: [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+OpenAPI JSON: http://localhost:8080/api-docs
 
 ---
 
-## 🔌 API Endpoints
+## 🔌 API Endpoints (overview)
 
-### 🚗 Transactions `/api/v1/transactions`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add a past sale transaction |
-| GET | `/` | Get all transactions |
-| GET | `/{id}` | Get transaction by ID |
-| GET | `/search?make=&model=` | Search transactions |
-| GET | `/average-price?make=&model=&year=` | Get average sale price |
-| DELETE | `/{id}` | Delete a transaction |
+Base path: `/api/v1`
 
-### 🏁 Competition `/api/v1/competition`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add competitor listing |
-| GET | `/` | Get all listings |
-| GET | `/summary?make=&model=&year=` | Get price summary |
-| DELETE | `/{id}` | Delete a listing |
+- Transactions: `/transactions`
+- Competition: `/competition`
+- Vehicle Conditions: `/conditions`
+- Demand Trends: `/demand-trends`
+- New Car Prices: `/new-car-prices`
+- Depreciation: `/depreciation`
+- Price Prediction: `/predict`
+- Automation Trigger: `/automation/sync/demand-trends`
 
-### 🔧 Conditions `/api/v1/conditions`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add condition assessment |
-| GET | `/` | Get all assessments |
-| GET | `/{id}` | Get by ID |
-| GET | `/vin/{vin}` | Get by VIN |
-| DELETE | `/{id}` | Delete record |
+Refer to Swagger UI for full request/response schemas and examples.
 
-### 📈 Demand Trends `/api/v1/demand-trends`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add demand trend |
-| GET | `/` | Get all trends |
-| GET | `/search?make=&model=` | Search by make/model |
-| DELETE | `/{id}` | Delete trend |
+---
 
-### 🏷️ New Car Prices `/api/v1/new-car-prices`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add new car price |
-| GET | `/` | Get all prices |
-| GET | `/latest?make=&model=&year=` | Get latest on-road price |
-| DELETE | `/{id}` | Delete record |
+## 📁 Code Layout (key files)
 
-### 📉 Depreciation `/api/v1/depreciation`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Add depreciation data |
-| GET | `/` | Get all records |
-| GET | `/calculate?make=&model=&ageYears=&fuelType=` | Calculate depreciation |
-| DELETE | `/{id}` | Delete record |
+The repository structure has been modularized so each domain artifact is in its own file. Important folders and representative files:
 
-### 🔮 Prediction `/api/v1/predict`
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/` | Predict price for a vehicle |
+```
+src/main/kotlin/com/hiteshdroid/carpredictor/
+├─ CarPredictorApplication.kt
+├─ controller/
+│  ├─ TransactionController.kt
+│  ├─ CompetitionController.kt
+│  ├─ VehicleConditionController.kt
+│  ├─ DemandTrendController.kt
+│  ├─ NewCarPriceController.kt
+│  ├─ DepreciationController.kt
+│  ├─ PricePredictionController.kt
+│  └─ DemandTrendAutomationTrigger.kt
+├─ dto/
+│  ├─ TransactionDTO.kt
+│  ├─ CompetitionDTO.kt
+│  ├─ VehicleConditionDTO.kt
+│  ├─ DemandTrendDTO.kt
+│  ├─ NewCarPriceDTO.kt
+│  ├─ DepreciationDTO.kt
+│  ├─ PricePredictionDTO.kt
+│  └─ ApiResponse.kt
+├─ model/
+│  ├─ Transaction.kt
+│  ├─ CompetitionListing.kt
+│  ├─ VehicleCondition.kt
+│  ├─ DemandTrend.kt
+│  ├─ NewCarPrice.kt
+│  └─ DepreciationData.kt
+├─ repository/
+│  ├─ TransactionRepository.kt
+│  ├─ CompetitionListingRepository.kt
+│  ├─ VehicleConditionRepository.kt
+│  ├─ DemandTrendRepository.kt
+│  ├─ NewCarPriceRepository.kt
+│  └─ DepreciationDataRepository.kt
+└─ service/
+   ├─ TransactionService.kt
+   ├─ CompetitionService.kt
+   ├─ VehicleConditionService.kt
+   ├─ DemandTrendService.kt
+   ├─ NewCarPriceService.kt
+   ├─ DepreciationService.kt
+   └─ PricePredictionService.kt
+```
+
+This modular layout replaces the previous monolithic `DTOs.kt`, `Models.kt`, `Repositories.kt`, and `Services.kt` files.
+
+---
+
+## 🔬 Price Prediction (brief)
+
+The prediction engine aggregates multiple signals with the following intuition:
+
+• Past transactions and competition listings provide historical and market prices.
+• New car on-road price adjusted by depreciation gives an anchor.
+• Vehicle condition and demand trends are used as multipliers/adjustments.
+
+Weights and heuristics are implemented in `PricePredictionService.kt` — review that file for exact computation.
 
 ---
 
 ## 🧪 Running Tests
 
 ```bash
-# Run all tests
+# Run tests
 ./gradlew test
 
-# Run with coverage report
-./gradlew test jacocoTestReport
+# Generate coverage report
+./gradlew jacocoTestReport
 
-# View coverage report
+# Open coverage report (macOS)
 open build/reports/jacoco/test/html/index.html
-
-# Verify coverage threshold (70%)
-./gradlew jacocoTestCoverageVerification
 ```
 
 ---
 
-## 📬 Postman Collection
+## 📬 Postman
 
-Import the collection from `postman/Used-Car-Price-Predictor.postman_collection.json`
-
-Set the `baseUrl` variable to `http://localhost:8080`
+Import `postman/Used-Car-Price-Predictor.postman_collection.json` and set `baseUrl` to `http://localhost:8080`.
 
 ---
 
-## ⚙️ GitHub Actions CI/CD
+## ⚙️ CI/CD
 
-CI pipeline runs on every push and PR to `main` and `develop`:
-
-1. ✅ Build the project
-2. ✅ Run all tests
-3. ✅ Generate JaCoCo coverage report
-4. ✅ Enforce 70% coverage threshold
-5. ✅ Upload test reports as artifacts
+The GitHub Actions workflow builds the project, runs tests, and publishes test artifacts. See `.github/workflows` for details.
 
 ---
 
-## 📁 Project Structure
+If you'd like, I can also:
 
-```
-src/
-├── main/kotlin/com/hiteshdroid/carpredictor/
-│   ├── CarPredictorApplication.kt
-│   ├── config/          # OpenAPI configuration
-│   ├── controller/      # REST controllers
-│   ├── service/         # Business logic
-│   ├── repository/      # MongoDB repositories
-│   ├── model/           # MongoDB documents
-│   ├── dto/             # Request/Response DTOs
-│   └── exception/       # Global exception handler
-└── test/kotlin/
-    ├── controller/      # Controller slice tests
-    └── service/         # Service unit tests
-```
+- Generate a concise developer README with commands and examples for common tasks (run, test, debug).
+- Add a small CONTRIBUTING.md describing code style and commit conventions.
 
 ---
-
-## 🔮 Price Prediction Algorithm
-
-The prediction engine combines all 6 factors with weighted scoring:
-
-| Factor | Weight |
-|--------|--------|
-| Past Transaction Average | 40% |
-| Competition Listing Average | 30% |
-| New Car Price × (1 - Depreciation%) | 20% |
-| Condition Score Multiplier | ±15% |
-| Demand Index Multiplier | ±10% |
-
-Confidence score is computed based on how many data points are available.
+© Project maintained by the original repository authors.
